@@ -27,28 +27,28 @@ namespace GameDuck
         Duck OneDuck = new Duck();
         AllAnimation Animation = new AllAnimation();
         Random rnd = new Random();
-        System.Timers.Timer timer = new System.Timers.Timer();
-        System.Timers.Timer timer2 = new System.Timers.Timer();
+        LoadAnything Load = new LoadAnything();
+        int score = 0;
+        Grid gridd = new Grid();
         public MainWindow()
         {
             InitializeComponent();
             Animation.StartAnimation(DuckObject, MarginProperty);
-            PlayMusic();
+            //PlayMusic();
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        async private void Window_KeyDown(object sender, KeyEventArgs e)
         {
 
             if (e.Key == Key.Enter)
             {
-                timer.Enabled = true;
-                timer.Interval = 1000;
-                timer.Elapsed += Score;
-                timer2.Enabled = true;
-                timer2.Interval = 400;
-                timer2.Elapsed += RandomMethod;
-                timer.Start();
-                timer2.Start();
+                while (OneDuck.Life)
+                {
+                    await Task.Delay(1000);
+                    gridd.Children.Add(Load.LoadImage());
+                    BarrierLoadMethod();
+                    Score();
+                }
             }
 
             if (e.Key == Key.Space)
@@ -60,8 +60,6 @@ namespace GameDuck
             if(e.Key == Key.R)
             {
                 OneDuck.Life = false;
-                timer.Stop();
-                timer2.Stop();
             }
         }
 
@@ -71,34 +69,38 @@ namespace GameDuck
                 OneDuck.jumping = false;
         }
 
-        public void RandomMethod(Object source, System.Timers.ElapsedEventArgs e)
+        public void RandomMethod()
         {
-                int ans = rnd.Next(1, 3);
-                if (ans == 1)
-                {
-                    Animation.BarrierAnimation(Barrier1, MarginProperty);
-                }
-                else if (ans == 2)
-                {
-                    Animation.BarrierAnimation(Barrier2, MarginProperty);
-                }
-                else if (ans == 3)
-                {
-                    Animation.BarrierAnimation(Barrier3, MarginProperty);
-                }
+            int ans = rnd.Next(1, 4);
+            if (ans == 1)
+            {
+                Animation.BarrierAnimation(Barrier1, MarginProperty);
+            }
+            else if (ans == 2)
+            {
+                Animation.BarrierAnimation(Barrier2, MarginProperty);
+            }
+            else if (ans == 3)
+            {
+                Animation.BarrierAnimation(Barrier3, MarginProperty);
+            }
+        }
+
+        public void BarrierLoadMethod()
+        {
+            Animation.BarrierAnimation(Load.LoadImage(), MarginProperty);
         }
 
         public void PlayMusic()
         {
             SoundPlayer sp = new SoundPlayer();
-            sp.SoundLocation = @"C:\Users\kira\Documents\Game\GameDuck\GameDuck\Resources\audio.wav";
+            sp.SoundLocation = @"C:\Users\kira\Documents\Game\ChromeGame\GameDuck\GameDuck\Resources\audio.wav";
             sp.Load();
             sp.PlayLooping();
         }
 
-        public void Score(Object source, System.Timers.ElapsedEventArgs e)
+        public void Score()
         {
-                int score = 0;
                 ScoreLabel.Content = "Score: " + score;
                 score++;
         }
